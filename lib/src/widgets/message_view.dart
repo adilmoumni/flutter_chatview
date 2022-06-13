@@ -29,6 +29,7 @@ import '../values/typedefs.dart';
 import 'image_message_view.dart';
 import 'text_message_view.dart';
 import 'reaction_widget.dart';
+import 'package:voice_message_package/voice_message_package.dart';
 
 class MessageView extends StatefulWidget {
   const MessageView({
@@ -125,7 +126,16 @@ class _MessageViewState extends State<MessageView>
                           imageMessageConfig: widget.imageMessageConfig,
                           messageReactionConfig: widget.messageReactionConfig,
                         )
-                      : TextMessageView(
+                        : widget.message.messageType.isAudio
+                            ?   VoiceMessage(
+                        contactBgColor: Colors.black,
+
+                        audioSrc: widget.message.message,
+                        played: false, // To show played badge or not.
+                        me: true, // Set message side.
+                        onPlay: () {}, // Do something when voice played.
+                      )
+                            : TextMessageView(
                           inComingChatBubbleConfig:
                               widget.inComingChatBubbleConfig,
                           outgoingChatBubbleConfig:
@@ -134,7 +144,9 @@ class _MessageViewState extends State<MessageView>
                           message: widget.message,
                           chatBubbleMaxWidth: widget.chatBubbleMaxWidth,
                           messageReactionConfig: widget.messageReactionConfig,
-                        ),
+                              )
+           
+           
             ),
           );
         },

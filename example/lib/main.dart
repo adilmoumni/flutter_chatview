@@ -1,7 +1,12 @@
 import 'package:chatview/chatview.dart';
-import 'package:example/data.dart';
-import 'package:example/models/theme.dart';
+
+
 import 'package:flutter/material.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+
+import 'music/audioModel.dart';
+import 'music/musicService.dart';
+import 'package:voice_message_package/voice_message_package.dart';
 
 void main() {
   runApp(const Example());
@@ -33,14 +38,44 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  AppTheme theme = LightTheme();
+
   bool isDarkTheme = false;
   final sender = ChatUser(id: '1', name: 'Flutter');
   final receiver = ChatUser(id: '2', name: 'Simform');
   final _chatController = ChatController(
-    initialMessageList: Data.messageList,
+
+    initialMessageList: [
+      Message(
+        id: '1',
+        message: "Hi",
+        createdAt: DateTime.now(),
+        sendBy: 'Adil',
+      ),
+      Message(
+        id: '2',
+        message: "Hello",
+        createdAt: DateTime.now(),
+        sendBy: 'Adil',
+      ),
+    ],
     scrollController: ScrollController(),
   );
+
+
+@override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getAllAudio();
+  }
+
+  List<Audio> _listAudio = [];
+
+  getAllAudio() async {
+    _listAudio = await fetchAudio();
+    setState(() {});
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -48,20 +83,18 @@ class _ChatScreenState extends State<ChatScreen> {
       body: ChatView(
         sender: sender,
         receiver: receiver,
+        loadingWidget: CircularProgressIndicator(),
         chatController: _chatController,
         onSendTap: _onSendTap,
         typeIndicatorConfig: TypeIndicatorConfiguration(
-          flashingCircleBrightColor: theme.flashingCircleBrightColor,
-          flashingCircleDarkColor: theme.flashingCircleDarkColor,
+          
         ),
+
+
         appBar: ChatViewAppBar(
-          elevation: theme.elevation,
-          backGroundColor: theme.appBarColor,
-          profilePicture: Data.profileImage,
-          backArrowColor: theme.backArrowColor,
+          profilePicture: 'https://source.unsplash.com/random',
           title: receiver.name,
           titleTextStyle: TextStyle(
-            color: theme.appBarTitleTextStyle,
             fontWeight: FontWeight.bold,
             fontSize: 18,
             letterSpacing: 0.25,
@@ -72,106 +105,108 @@ class _ChatScreenState extends State<ChatScreen> {
             IconButton(
               onPressed: _onThemeIconTap,
               icon: Icon(
-                isDarkTheme
-                    ? Icons.brightness_4_outlined
-                    : Icons.dark_mode_outlined,
-                color: theme.themeIconColor,
+                 Icons.audiotrack_rounded
               ),
             ),
           ],
         ),
         chatBackgroundConfig: ChatBackgroundConfiguration(
-          messageTimeIconColor: theme.messageTimeIconColor,
-          messageTimeTextStyle: TextStyle(color: theme.messageTimeTextColor),
+
           defaultGroupSeparatorConfig: DefaultGroupSeparatorConfiguration(
             textStyle: TextStyle(
-              color: theme.chatHeaderColor,
+
               fontSize: 17,
             ),
           ),
-          backgroundColor: theme.backgroundColor,
+
         ),
         sendMessageConfig: SendMessageConfiguration(
-          replyMessageColor: theme.replyMessageColor,
-          defaultSendButtonColor: theme.sendButtonColor,
-          replyDialogColor: theme.replyDialogColor,
-          replyTitleColor: theme.replyTitleColor,
-          textFieldBackgroundColor: theme.textFieldBackgroundColor,
-          closeIconColor: theme.closeIconColor,
-          textStyle: TextStyle(color: theme.textFieldTextColor),
+
+            textFieldBackgroundColor: Colors.grey,
+            textStyle: TextStyle(
+              color: Colors.black,
+            )
+
         ),
         chatBubbleConfig: ChatBubbleConfiguration(
+
           outgoingChatBubbleConfig: ChatBubble(
+
             linkPreviewConfig: LinkPreviewConfiguration(
-              backgroundColor: theme.linkPreviewOutgoingChatColor,
-              bodyStyle: theme.outgoingChatLinkBodyStyle,
-              titleStyle: theme.outgoingChatLinkTitleStyle,
+
+
+
+
             ),
-            color: theme.outgoingChatBubbleColor,
+
           ),
           inComingChatBubbleConfig: ChatBubble(
+
             linkPreviewConfig: LinkPreviewConfiguration(
               linkStyle: TextStyle(
-                color: theme.inComingChatBubbleTextColor,
+
                 decoration: TextDecoration.underline,
               ),
-              backgroundColor: theme.linkPreviewIncomingChatColor,
-              bodyStyle: theme.incomingChatLinkBodyStyle,
-              titleStyle: theme.incomingChatLinkTitleStyle,
+
+
+
             ),
-            textStyle: TextStyle(color: theme.inComingChatBubbleTextColor),
-            color: theme.inComingChatBubbleColor,
+
+
           ),
         ),
         replyPopupConfig: ReplyPopupConfiguration(
-          backgroundColor: theme.replyPopupColor,
-          buttonTextStyle: TextStyle(color: theme.replyPopupButtonColor),
-          topBorderColor: theme.replyPopupTopBorderColor,
+
+
+
         ),
         reactionPopupConfig: ReactionPopupConfiguration(
           shadow: BoxShadow(
             color: isDarkTheme ? Colors.black54 : Colors.grey.shade400,
             blurRadius: 20,
           ),
-          backgroundColor: theme.reactionPopupColor,
+
           onEmojiTap: _chatController.setReaction,
         ),
         messageConfig: MessageConfiguration(
+          
           messageReactionConfig: MessageReactionConfiguration(
-            backgroundColor: theme.messageReactionBackGroundColor,
-            borderColor: theme.messageReactionBackGroundColor,
+
           ),
           imageMessageConfig: ImageMessageConfiguration(
             shareIconConfig: ShareIconConfiguration(
-              defaultIconBackgroundColor: theme.shareIconBackgroundColor,
-              defaultIconColor: theme.shareIconColor,
+
+
             ),
           ),
         ),
         profileCircleConfig:
-            ProfileCircleConfiguration(profileImageUrl: Data.profileImage),
+            ProfileCircleConfiguration(
+            profileImageUrl: 'https://source.unsplash.com/random'),
         repliedMessageConfig: RepliedMessageConfiguration(
-          backgroundColor: theme.repliedMessageColor,
-          verticalBarColor: theme.verticalBarColor,
+backgroundColor: Colors.blue,
+          verticalBarColor: Colors.black,
+
           textStyle: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
             letterSpacing: 0.25,
           ),
-          replyTitleTextStyle: TextStyle(color: theme.repliedTitleTextColor),
+
         ),
         swipeToReplyConfig: SwipeToReplyConfiguration(
-          replyIconColor: theme.swipeToReplyIconColor,
+
         ),
       ),
     );
   }
 
   void _onSendTap(String message, ReplyMessage replyMessage) {
-    final id = int.parse(Data.messageList.last.id) + 1;
+    final id = int.parse('1') + 1;
     _chatController.addMessage(
       Message(
         id: id.toString(),
+        messageType: MessageType.audio,
         createdAt: DateTime.now(),
         message: message,
         sendBy: sender.id,
@@ -181,14 +216,59 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _onThemeIconTap() {
-    setState(() {
-      if (isDarkTheme) {
-        theme = LightTheme();
-        isDarkTheme = false;
-      } else {
-        theme = DarkTheme();
-        isDarkTheme = true;
-      }
-    });
+
+    showCupertinoModalBottomSheet(
+        context: context,
+        builder: (context) => Scaffold(
+            appBar: AppBar(
+              leading: Container(),
+              backgroundColor: Colors.transparent,
+              elevation: 1,
+              title: Text('Audio'),
+            ),
+            body: ListView.separated(
+              itemCount: _listAudio.length,
+              itemBuilder: (context, i) {
+                return ListTile(
+                  trailing: IconButton(
+                      onPressed: () {
+                        final id = int.parse('1') + 1;
+                        _chatController.addMessage(
+                          Message(
+                            messageType: MessageType.audio,
+                            id: id.toString(),
+                            createdAt: DateTime.now(),
+                            message: _listAudio[i].file1File!,
+                            sendBy: sender.id,
+                            replyMessage: null,
+                          ),
+                        );
+
+                        Navigator.pop(context);
+                      },
+                      icon: Icon(Icons.send)),
+                  title: Column(
+                    children: [
+                      VoiceMessage(
+                        contactBgColor: Colors.black,
+
+                        audioSrc: _listAudio[i].file1File!,
+                        played: false, // To show played badge or not.
+                        me: true, // Set message side.
+                        onPlay: () {}, // Do something when voice played.
+                      ),
+                      Text(_listAudio[i].nameText!)
+                    ],
+                  ),
+                );
+              },
+              separatorBuilder: (context, i) {
+                return Container(
+                  width: double.infinity,
+                  height: 1,
+                  color: Colors.grey,
+                );
+              },
+            )));
   }
 }
